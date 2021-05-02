@@ -4,6 +4,11 @@
 - Service server : https://voxmonapp.com/
 - Development server : 132.226.227.186
 
+### 라이브러리
+```
+react-router-dom react-redux redux redux-actions immutable styled-components open-color
+```
+
 ## 가입
 ```
 POST /auth/register
@@ -43,3 +48,4 @@ output: {
   refreshToken
 }
 ```
+
