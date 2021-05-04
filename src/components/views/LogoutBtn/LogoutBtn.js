@@ -12,7 +12,7 @@ function LandingPage(props) {
                 props.history.push('/login')
             }else{
                 alert('your not login now')
-                props.history.push('/login')
+                
             }
             
         })

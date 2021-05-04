@@ -15,10 +15,9 @@ function App() {
   return (
     <Router>
       <div>
-        <Navbar/>
         <hr />
         <Switch>
-          <Route exact path="/"  component={Auth(LogoutBtn, true)} />
+          <Route exact path="/"  component={Auth(LogoutBtn,null)} />
           <Route exact path="/login" component={Auth(LoginPage,false)} />
           <Route exact path="/register" component={Auth(RegisterPage,false)} />    
         </Switch>
