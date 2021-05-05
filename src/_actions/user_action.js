@@ -4,7 +4,7 @@ import { REGISTER_USER } from './types';
 import { AUTH_USER } from './types';
 
 export function loginUser(dataTosubmit){
-    const request = Axios.post('/auth/login',dataTosubmit).then(response => 
+    const request = Axios.post('/api/users/login',dataTosubmit).then(response => 
         response.data
     )
 
@@ -16,7 +16,7 @@ export function loginUser(dataTosubmit){
 }
 
 export function registerUser(dataTosubmit){
-    const request = Axios.post('/auth/register',dataTosubmit)
+    const request = Axios.post('/api/users/register',dataTosubmit)
     .then(response => response.data)
 
     return {
@@ -28,7 +28,7 @@ export function registerUser(dataTosubmit){
 
 
 export function auth(dataTosubmit){
-    const request = Axios.get('/auth/refresh-token',dataTosubmit)
+    const request = Axios.get('/api/users/auth',dataTosubmit)
     .then(response => response.data)
 
     return {
