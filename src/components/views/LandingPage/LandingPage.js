@@ -9,7 +9,7 @@ function LandingPage(props) {
     
 
     const onClikcHandler = () => {
-        axios.get(`/api/users/logout`)
+        axios.get(`/api/logout`)
         .then(response => {
             if(response.data.success){
                 props.history.push('/login')
@@ -18,13 +18,6 @@ function LandingPage(props) {
                 
             }
             
-        })
-    }
-
-    const isLoggedIn = () => {
-        axios.get('/api/users/auth')
-        .then(response => {
-            if(response.data.success);
         })
     }
 
