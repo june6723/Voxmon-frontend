@@ -1,7 +1,7 @@
 import React,{useState} from 'react'
 import {useDispatch} from 'react-redux'
 import {loginUser} from '../../../_actions/user_action'
-import { withRouter } from 'react-router-dom'
+import { useHistory, withRouter } from 'react-router-dom'
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -38,11 +38,8 @@ const useStyles = makeStyles((theme) => ({
     }));
 
 
-
-
-
 function LoginPage(props) {
-
+    const history = useHistory()
     const dispatch = useDispatch();
 
 const [Email, setEmail] = useState("")
@@ -68,16 +65,7 @@ const onsubmitHandler = (event) => {
     }
 
 
-    dispatch(loginUser(body))
-        .then(response => {
-            if(response.payload.loginSuccess){
-                props.history.push('/')
-            }else{
-                alert('fail to login')
-            }
-        })
-
-
+    dispatch(loginUser(body, history))
 }
 
 const classes = useStyles();
