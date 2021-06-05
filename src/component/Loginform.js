@@ -1,3 +1,4 @@
+import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -10,59 +11,60 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { useState } from 'react';
-import {useHistory, withRouter} from 'react-router-dom';
-import jwt_decode from "jwt-decode";
-import {connect, useDispatch} from 'react-redux'
-import axios from 'axios'
-import {userlogin} from '../actions/authAction'
-import { Component } from 'react';
-class HTTPError extends Error {}
+import {useState} from 'react'
+import {connect} from 'react-redux'
+import { loginUser } from '../action/authAction';
+import { useDispatch } from "react-redux";
+import {useHistory} from 'react-router-dom'
 
 
-const Loginform = ({ token, setToken }) => {
+const useStyles = makeStyles((theme) => ({
+    paper: {
+        marginTop: theme.spacing(8),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        },
+        avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.secondary.main,
+        },
+        form: {
+        width: '100%', // Fix IE 11 issue.
+        marginTop: theme.spacing(1),
+        },
+        submit: {
+        margin: theme.spacing(3, 0, 2),
+        },
+}));
 
+const LoginForm = () => {
     const classes = useStyles();
-
-    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const dispatch = useDispatch();
     const history = useHistory();
-    
-    const Submithandler = (e) => {
-        e.preventDefault();
-        const data = {email, password};
-        fetch('http://localhost:5000/auth/login',{
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            mode: 'cors',
-            credentials: 'same-origin',
-            body: JSON.stringify(data)
-        })
-        .then(res => {
-            if (res.ok) {
-                // 요청이 성공(200~299) 하면
-                return res.json()
-                } else {
-                // 아니면 일단 에러 던지고 보자
-                alert('Check your ID or PW')
-                throw new HTTPError(`Response: ${res.statusText}`)
-                }
-        }).then(res => {
-            localStorage.setItem('accessToken', res.accessToken)
-            localStorage.setItem('refreshToken', res.refreshToken)
-            setToken(localStorage.getItem('accessToken'))
-            console.log(jwt_decode(localStorage.getItem('accessToken')))
-            history.push('/')
-        })
-        .catch(error => console.error('Error:', error))
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        let body = {email:email, password:password}
+        console.log(body)
+        try{
+            const result = await dispatch(loginUser(body))
+            console.log('LoginResult',result.payload)
+            if(result.payload){
+                localStorage.setItem('accessToken',result.payload.accessToken)
+                localStorage.setItem('refreshToken',result.payload.refreshToken)
+                history.push('/')
+            }    
+            return result
+        }catch(error){
+            console.log(error)
+            return alert('check your email or password')
+        }       
     }
-
-
-
-
-    return( 
-        
+    
+    return(
         <div className="Loginform">
                 <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -73,7 +75,7 @@ const Loginform = ({ token, setToken }) => {
             <Typography component="h1" variant="h5">
             Sign in
             </Typography>
-            <form className={classes.form} onSubmit={Submithandler}>
+            <form className={classes.form} onSubmit={handleSubmit}>
             <TextField
                 variant="outlined"
                 margin="normal"
@@ -134,148 +136,5 @@ const Loginform = ({ token, setToken }) => {
 }
 
 
-const logintoprops = (dispatch) => {
-    return {
-        loginuser: (data) => {dispatch(userlogin(data))}
-    }
-}
 
-
-
-
-// const Loginform = ({token,setToken}) => {
-
-//     const classes = useStyles();
-//     const dispatch = useDispatch();
-    
-//     const [email, setEmail] = useState('');
-//     const [password, setPassword] = useState('');
-//     const history = useHistory();
-    
-//     const Submithandler = (e) => {
-//         e.preventDefault();
-//         const data = {email:email, password:password};
-
-//         fetch('http://localhost:5000/auth/login',{
-//             method: 'POST',
-//             headers: {'Content-Type':'application/json'},
-//             mode: 'cors',
-//             credentials: 'same-origin',
-//             body: JSON.stringify(data)
-//         })
-//         .then(res => {
-//             if (res.ok) {
-//                 // 요청이 성공(200~299) 하면
-//                 return res.json()
-//                 } else {
-//                 // 아니면 일단 에러 던지고 보자
-//                 alert('Check your ID or PW')
-//                 throw new HTTPError(`Response: ${res.statusText}`)
-//                 }
-//         }).then(res => {
-//             localStorage.setItem('accessToken', res.accessToken)
-//             localStorage.setItem('refreshToken', res.refreshToken)
-//             setToken(localStorage.getItem('accessToken'))
-//             console.log(jwt_decode(localStorage.getItem('accessToken')))
-//             history.push('/')
-//         })
-//         .catch(error => console.error('Error:', error))
-
-//     }
-
-
-
-
-//     return( 
-        
-//         <div className="Loginform">
-//                 <Container component="main" maxWidth="xs">
-//         <CssBaseline />
-//         <div className={classes.paper}>
-//             <Avatar className={classes.avatar}>
-//             <LockOutlinedIcon />
-//             </Avatar>
-//             <Typography component="h1" variant="h5">
-//             Sign in
-//             </Typography>
-//             <form className={classes.form} onSubmit={Submithandler}>
-//             <TextField
-//                 variant="outlined"
-//                 margin="normal"
-//                 required
-//                 fullWidth
-//                 id="email"
-//                 label="Email Address"
-//                 name="email"
-//                 autoComplete="email"
-//                 autoFocus
-//                 value={email}
-//                 onChange={(e) => setEmail(e.target.value)}
-//             />
-//             <TextField
-//                 variant="outlined"
-//                 margin="normal"
-//                 required
-//                 fullWidth
-//                 name="password"
-//                 label="Password"
-//                 type="password"
-//                 id="password"
-//                 autoComplete="current-password"
-//                 value={password}
-//                 onChange={(e) => setPassword(e.target.value)}
-//             />
-//             <FormControlLabel
-//                 control={<Checkbox value="remember" color="primary" />}
-//                 label="Remember me"
-//             />
-//             <Button
-//                 type="submit"
-//                 fullWidth
-//                 variant="contained"
-//                 color="primary"
-//                 className={classes.submit}
-//             >
-//                 Sign In
-//             </Button>
-//             <Grid container>
-//                 <Grid item xs>
-//                 <Link href="#" variant="body2">
-//                     Forgot password?
-//                 </Link>
-//                 </Grid>
-//                 <Grid item>
-//                 <Link href="/register" variant="body2">
-//                     {"Don't have an account? Sign Up"}
-//                 </Link>
-//                 </Grid>
-//             </Grid>
-//             </form>
-//         </div>
-//         </Container>
-//             </div>
-        
-//     )
-// }
-
-export default Loginform;
-
-const useStyles = makeStyles((theme) => ({
-    paper: {
-        marginTop: theme.spacing(8),
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        },
-        avatar: {
-        margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
-        },
-        form: {
-        width: '100%', // Fix IE 11 issue.
-        marginTop: theme.spacing(1),
-        },
-        submit: {
-        margin: theme.spacing(3, 0, 2),
-        },
-}));
+export default LoginForm

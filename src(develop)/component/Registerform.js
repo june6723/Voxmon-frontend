@@ -1,4 +1,3 @@
-import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -11,11 +10,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import {useState} from 'react'
-import {connect} from 'react-redux'
-import { registerUser } from '../action/authAction';
-import { useDispatch } from "react-redux";
-import { useHistory } from 'react-router-dom'
+import { useState } from "react";
+import { useHistory } from 'react-router-dom';
+class HTTPError extends Error {}
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -37,36 +34,49 @@ const useStyles = makeStyles((theme) => ({
         },
     }));
     
+    
+const Registerform = () => {
 
-const RegisterForm = () => {
-    const classes = useStyles();
-    const [name, setName] = useState('');
+    const [username, setUserName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [passwordcheck, setPasswordCheck ] = useState('');
-    const dispatch = useDispatch();
-    const history = useHistory();
+    const [passwordCheck, setPasswordCheck] = useState('');
+    const [isPending, setisPending] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        let body = {username:name,email:email, password:password}
-        if(password !== passwordcheck){
-            throw alert('Password was Incorrect');
-        }
-        try{
-            const result = await dispatch(registerUser(body))
-            alert('congratulation! successfully signed up!') 
-            history.push('/login')
-            console.log(result) 
-            return result;
-        }catch(error){
-            alert('name or email is already registered')
-            return error
-        }
-    }
-    
+    const history =  useHistory();
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const users = {username, email, password};
+        setisPending(true);
+
+            if(password === passwordCheck){
+            fetch('http://localhost:5000/auth/register',{
+                method:'POST',
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify(users)
+            }).then(res => {
+                if (res.ok) {
+                    // 요청이 성공(200~299) 하면
+                    return (console.log('Success:', res),history.push('/'))
+                    } else {
+                    // 아니면 일단 에러 던지고 보자
+                    alert('email or name is already registered')
+                    throw new HTTPError(`Response: ${res.statusText}`)
+                    }
+            })
+            .catch(error => console.error('Error:', error));
+            setisPending(false)
+            }else{
+                alert('Check Password');
+            }
+        
+        
+    } 
 
 
+
+        const classes = useStyles();
 
     return(
             <div className="Registerform">         
@@ -91,8 +101,8 @@ const RegisterForm = () => {
                     label="Name"
                     name="Name"
                     autoComplete="name"
-                    value = {name}
-                    onChange = {(e) => setName(e.target.value)}
+                    value = {username}
+                    onChange = {(e) => setUserName(e.target.value)}
                 />
                 </Grid>
 
@@ -111,7 +121,7 @@ const RegisterForm = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                <TextField  
+                <TextField
                     variant="outlined"
                     required
                     fullWidth
@@ -134,14 +144,14 @@ const RegisterForm = () => {
                     label="Password Check"
                     type="password"
                     id="password"
-                    value={passwordcheck}
+                    value={passwordCheck}
                     onChange = {(e) => setPasswordCheck(e.target.value)}
                 />
                 </Grid>
             </Grid>
 
 
-            <Button
+            { !isPending && <Button
                 type="submit"
                 fullWidth
                 variant="contained"
@@ -149,8 +159,16 @@ const RegisterForm = () => {
                 className={classes.submit}
             >
                 Sign Up
-            </Button> 
-            
+            </Button> }
+            { isPending && <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+            >
+                Sign Up...
+            </Button>}
             <Grid container justify="flex-end">
                 <Grid item>
                 <Link href="/login" variant="body2">
@@ -163,9 +181,7 @@ const RegisterForm = () => {
         </Container>
         </div>
     )
-
 }
 
 
-
-export default RegisterForm
+export default Registerform;
