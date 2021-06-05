@@ -8,7 +8,7 @@ import Room2 from './Room2'
 import Room3 from './Room3'
 import './App.css'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import Auth from './Auth'
+import Auth from '../hoc/Auth'
 import { useState } from 'react'
 function App() {
 
