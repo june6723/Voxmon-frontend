@@ -1,19 +1,23 @@
 import React from "react";
 import "./App.css";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import LoginForm from './component/LoginForm'
-import RegisterForm from './component/RegisterForm'
+import Navbar from './component/Navbar'
 import RandingPage from './component/RandingPage'
+import LoginForm from './component/Loginform'
+import RegisterForm from './component/Registerform'
+
+
 function App() {
   return (
     <Router>
-      <div>
+      <Navbar/>
+      <>
         <Switch>
           <Route exact path="/" component={RandingPage} />
           <Route exact path="/login" component={LoginForm} />
           <Route exact path="/register" component={RegisterForm} />
         </Switch>
-      </div>
+      </>
     </Router>
   );
 }
